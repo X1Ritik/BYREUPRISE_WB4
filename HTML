@@ -1,0 +1,165 @@
+FIRST FILE 
+import React, { useState } from 'react';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import MediaCard from './InfoData.jsx'
+import './SearchPlace.css';
+import Box from './SmallBox.jsx'
+
+// import Searchbar from "./SearchPlace.jsx"; // Commented out to avoid conflict
+
+function SearchComponent() {
+    const [input, setInput] = useState("");
+    const [object, setobject] = useState({
+        name: "   ___________  ",
+        temp: "   ___________  ",
+        status: " _____________",
+        wind_speed: " ___________",
+        humidity: " ___________",
+        pressure: " ___________",
+        temp_min: " ___________",
+        temp_max: " ___________",
+        weather: " _________",
+        Lan: "______________",
+        Lat: "_____________",
+        season_status: "________",
+        country_status: "________"
+    })
+
+    const URL = "http://api.openweathermap.org/data/2.5/forecast";
+    const ApiKey = "964c5d80b893adb0b5af27f359c6b63a";
+
+    function handleInputChange(event) {
+        setInput(event.target.value);
+    }
+
+    let URLSet = async () => {
+        let respons = await fetch(`${URL}?q=${input}&appid=${ApiKey}&units=metric`);
+        let data = await respons.json();
+        console.log(data);
+
+        setobject({
+            name: data.name,
+            temp: data.main.temp,
+            status: "Moderate-Climate",
+            weather: data.weather[0].description,
+            temp_max: data.main.temp_max,
+            temp_min: data.main.temp_min,
+            wind_speed: data.wind.speed,
+            season_status: "Summer",
+            Lan: data.coord.lon,
+            Lat: data.coord.lat,
+            humidity: data.main.humidity,
+            country_status: data.sys.country,
+        });
+        console.log(result);
+    }
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        console.log(input);
+        await URLSet();
+        setInput("");
+    }
+    return (
+        <>
+            <div className="logo">
+                <img src="/logoMain.jpeg" alt="logo" />
+                <h2>Weather-WitGet</h2>
+            </div>
+            <div className="second">
+                <h1>Search The City Name</h1>
+                <form onSubmit={handleSubmit}>
+                    <TextField
+                        required
+                        id="city"
+                        label="City Name"
+                        variant="outlined"
+                        value={input}
+                        onChange={handleInputChange}
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                                color: 'white', // text color
+                                '& fieldset': {
+                                    borderColor: 'white', // default border color
+                                },
+                                '&:hover fieldset': {
+                                    borderColor: 'white', // border color on hover
+                                },
+                                '&.Mui-focused fieldset': {
+                                    borderColor: 'white', // border color when focused
+                                },
+                            },
+                            '& .MuiInputLabel-root': {
+                                color: 'white', // default label color
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                                color: 'white', // label color when focused
+                            },
+                        }}
+                    />
+                    <br />
+                    <Button
+                        id="button"
+                        variant="contained"
+                        type="submit"
+                    >
+                        Search Tem.
+                    </Button>
+                </form>
+            </div>
+            <MediaCard name={object.name} weather={object.weather} temp={object.temp} status={object.status} wind_Speed={object.wind_speed} />
+            <Box temp_min={object.temp_min} temp_max={object.temp_max} Lan={object.Lan} humidity={object.humidity} season_status={object.season_status} Lat={object.Lat} weather={object.weather} country_status={object.country_status} />
+        </>
+    );
+}
+
+export default SearchComponent;
+SECOND FILE
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Typography from '@mui/material/Typography';
+import './InfoData.css'
+
+export default function MediaCard({name,weather,temp,status,wind_Speed}) {
+    // Direct image link
+    let imageURL = "https://images.unsplash.com/photo-1589571894960-20bbe2828b12?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDR8fGdyYXNzJTIwZmllbGR8ZW58MHx8fHwxNjE4NjMyNzY2&ixlib=rb-1.2.1&q=80&w=1080";
+
+    // let info = {
+    //     name: "Nagpur",
+    //     temp: "34",
+    //     temp_min: "33",
+    //     temp_max: "35",
+    //     humidity: "60",
+    //     wind_speed: "20",
+    //     status: "moderate-Climate",
+    //     weather: "cloudy",
+    //     Lat:"30",
+    //     Lon : "80"
+    // };
+
+    return (
+        <div className="fourth">
+            <Card sx={{ maxWidth: 1000 }}>
+                <div className="third">
+                    <h2>WeatherInfo : {weather}</h2>
+                </div>
+                <CardMedia
+                    sx={{ height: 130 }}
+                    image="pic.avif"
+                    title="green iguana"
+                />
+                <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                        {name}                </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        <h3>Temperature : {temp}&deg;C</h3>
+                        <h3>Enviroment-Status : {status} </h3>
+                        <h3>Wind-Speed : {wind_Speed} m/s</h3>
+                    </Typography>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
